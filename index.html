@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMA'S 48 Notification API</title>
+</head>
+<script>
+    function forceDownload(url, fileName) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.responseType = "blob";
+        xhr.onload = function () {
+            var urlCreator = window.URL || window.webkitURL;
+            var imageUrl = urlCreator.createObjectURL(this.response);
+            var tag = document.createElement('a');
+            tag.href = imageUrl;
+            tag.download = fileName;
+            document.body.appendChild(tag);
+            tag.click();
+            document.body.removeChild(tag);
+        }
+        xhr.send();
+    }
+
+    window.onload = function () {
+        var url = new URL(window.location);
+        var text = url.searchParams.get("text");
+        var files = url.searchParams.get("files");
+        if (text && files) {
+            var decoded_text = decodeURIComponent(text)
+            document.getElementById("textbox").innerText = decoded_text
+            var all_files = decodeURIComponent(files).split("+")
+            var link_list = document.getElementById("links")
+            all_files.forEach(link => {
+                var li = document.createElement("a")
+                filename = link.split("/").pop().split("?").shift()
+                li.innerText = filename
+                li.href = link
+                link_list.appendChild(li)
+            })
+            document.getElementById("copytext").addEventListener("click", (evt) => {
+                navigator.clipboard.writeText(decoded_text)
+                evt.target.innerText = "COPY TEXT OK!"
+                setTimeout(() => { evt.target.innerText = "COPY TEXT" }, 500)
+            })
+            document.getElementById("downloadall").addEventListener("click", () => {
+                link_list.childNodes.forEach(a => {
+                    forceDownload(a.href, a.innerText)
+                })
+            })
+        } else {
+            window.location.replace("about:blank")
+        }
+    }
+</script>
+<style>
+    #textbox {
+        min-width: 300px;
+        max-width: 300px;
+        height: 200px;
+        word-break: keep-all;
+        word-wrap: break-word;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        background-color: rgb(212, 212, 212);
+        font-size: 14pt;
+        padding: 20px;
+    }
+
+    button {
+        font-size: 24pt;
+    }
+
+    #links {
+        display: flex;
+        font-family: monospace;
+        list-style-type: square;
+        min-width: 300px;
+        max-width: 300px;
+        height: 150px;
+        word-wrap: normal;
+        white-space: nowrap;
+        overflow: scroll;
+        background-color: rgb(212, 212, 212);
+        font-size: 12pt;
+        padding: 12px;
+        padding-left: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        flex-wrap: nowrap;
+    }
+</style>
+
+<body>
+    <h1>Text</h1>
+    <div id="textbox"></div>
+    <button id="copytext">COPY TEXT</button>
+    <h1>Files</h1>
+    <div id="links"></div>
+    <button id="downloadall">Download All</button>
+</body>
+
+</html>
