@@ -26,33 +26,38 @@
 
     window.onload = function () {
         var url = new URL(window.location);
-        var text = url.searchParams.get("text");
-        var files = url.searchParams.get("files");
-        if (text && files) {
-            var decoded_text = decodeURIComponent(text)
-            document.getElementById("textbox").innerText = decoded_text
-            var all_files = decodeURIComponent(files).split("+")
-            var link_list = document.getElementById("links")
-            all_files.forEach(link => {
-                var li = document.createElement("a")
-                filename = link.split("/").pop().split("?").shift()
-                li.innerText = filename
-                li.href = link
-                link_list.appendChild(li)
+        var params = url.searchParams.get("params");
+        fetch("https://pastebin.com/" + params)
+            .then(res => res.json())
+            .then(res => {
+                var text = res[0];
+                var files = res[1];
+                if (text && files) {
+                    var decoded_text = text
+                    document.getElementById("textbox").innerText = decoded_text
+                    var all_files = files
+                    var link_list = document.getElementById("links")
+                    all_files.forEach(link => {
+                        var li = document.createElement("a")
+                        filename = link.split("/").pop().split("?").shift()
+                        li.innerText = filename
+                        li.href = link
+                        link_list.appendChild(li)
+                    })
+                    document.getElementById("copytext").addEventListener("click", (evt) => {
+                        navigator.clipboard.writeText(decoded_text)
+                        evt.target.innerText = "COPY TEXT OK!"
+                        setTimeout(() => { evt.target.innerText = "COPY TEXT" }, 500)
+                    })
+                    document.getElementById("downloadall").addEventListener("click", () => {
+                        link_list.childNodes.forEach(a => {
+                            forceDownload(a.href, a.innerText)
+                        })
+                    })
+                } else {
+                    window.location.replace("about:blank")
+                }
             })
-            document.getElementById("copytext").addEventListener("click", (evt) => {
-                navigator.clipboard.writeText(decoded_text)
-                evt.target.innerText = "Copy Text Done!"
-                setTimeout(() => { evt.target.innerText = "Copy Text" }, 500)
-            })
-            document.getElementById("downloadall").addEventListener("click", () => {
-                link_list.childNodes.forEach(a => {
-                    forceDownload(a.href, a.innerText)
-                })
-            })
-        } else {
-            window.location.replace("about:blank")
-        }
     }
 </script>
 <style>
@@ -96,7 +101,7 @@
 <body>
     <h1>Text</h1>
     <div id="textbox"></div>
-    <button id="copytext">Copy Text</button>
+    <button id="copytext">COPY TEXT</button>
     <h1>Files</h1>
     <div id="links"></div>
     <button id="downloadall">Download All</button>
