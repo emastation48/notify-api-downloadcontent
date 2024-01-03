@@ -42,8 +42,8 @@
             })
             document.getElementById("copytext").addEventListener("click", (evt) => {
                 navigator.clipboard.writeText(decoded_text)
-                evt.target.innerText = "COPY TEXT OK!"
-                setTimeout(() => { evt.target.innerText = "COPY TEXT" }, 500)
+                evt.target.innerText = "Copy Text Done!"
+                setTimeout(() => { evt.target.innerText = "Copy Text" }, 500)
             })
             document.getElementById("downloadall").addEventListener("click", () => {
                 link_list.childNodes.forEach(a => {
@@ -96,7 +96,7 @@
 <body>
     <h1>Text</h1>
     <div id="textbox"></div>
-    <button id="copytext">COPY TEXT</button>
+    <button id="copytext">Copy Text</button>
     <h1>Files</h1>
     <div id="links"></div>
     <button id="downloadall">Download All</button>
