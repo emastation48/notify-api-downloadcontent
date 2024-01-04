@@ -27,7 +27,7 @@
     window.onload = function () {
         var url = new URL(window.location);
         var params = url.searchParams.get("params");
-        fetch("https://pastebin.com/" + params)
+        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://pastebin.com/raw/'+params)}`)
             .then(res => res.json())
             .then(res => {
                 var text = res[0];
