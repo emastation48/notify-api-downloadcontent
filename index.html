@@ -27,7 +27,13 @@
     window.onload = function () {
         var url = new URL(window.location);
         var params = url.searchParams.get("params");
-        fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent('https://pastebin.com/raw/'+params)}`)
+        var token = url.searchParams.get("token");
+        fetch('https://hastebin.com/raw/'+params, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer "+token
+            }
+        })
             .then(res => res.json())
             .then(res => {
                 console.log(res);
